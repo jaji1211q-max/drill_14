@@ -33,6 +33,17 @@ class BirdMovementTests(unittest.TestCase):
         self.assertEqual(sprite.direction, -1)
         self.assertLess(sprite.x, position_after_bounce)
 
+    def test_moves_at_80_kmh_in_game_coordinates(self):
+        sprite = bird.Bird(800, 480)
+        game_framework.frame_time = 0.1
+
+        sprite.update()
+
+        self.assertAlmostEqual(
+            sprite.x,
+            800 + bird.SPEED_PPS * game_framework.frame_time,
+        )
+
     def test_reverses_at_both_walls(self):
         left_bound = bird.FRAME_WIDTH / 2
         right_bound = canvas.width - left_bound
