@@ -1,3 +1,4 @@
+import importlib
 import sys
 import types
 import unittest
@@ -6,7 +7,9 @@ from unittest.mock import patch
 
 canvas = types.ModuleType('pico2d')
 canvas.width = 1600
+canvas.height = 600
 canvas.get_canvas_width = lambda: canvas.width
+canvas.get_canvas_height = lambda: canvas.height
 canvas.load_image = lambda _path: object()
 
 import game_framework
@@ -71,6 +74,50 @@ class BirdMovementTests(unittest.TestCase):
             draw_calls[0][-2:],
             (bird.DISPLAY_WIDTH, bird.DISPLAY_HEIGHT),
         )
+
+    def test_play_mode_spawns_ten_birds_at_random_heights(self):
+        import game_world
+
+        boy_module = types.ModuleType('boy')
+        boy_module.Boy = lambda: object()
+        grass_module = types.ModuleType('grass')
+        grass_module.Grass = lambda: object()
+
+        with patch.dict(
+            sys.modules,
+            {
+                'pico2d': canvas,
+                'bird': bird,
+                'boy': boy_module,
+                'game_world': game_world,
+                'grass': grass_module,
+            },
+        ):
+            play_mode = importlib.import_module('play_mode')
+
+        game_world.clear()
+        try:
+            with patch.object(
+                play_mode, 'randint', side_effect=range(100, 110)
+            ) as random_y:
+                play_mode.init()
+
+            birds = [
+                obj
+                for layer in game_world.world
+                for obj in layer
+                if isinstance(obj, bird.Bird)
+            ]
+            self.assertEqual(len(birds), 10)
+            self.assertEqual([obj.y for obj in birds], list(range(100, 110)))
+            random_y.assert_any_call(
+                int(bird.DISPLAY_HEIGHT / 2),
+                canvas.height - int(bird.DISPLAY_HEIGHT / 2),
+            )
+            self.assertEqual(random_y.call_count, 10)
+        finally:
+            game_world.clear()
+            play_mode.boy = None
 
 
 if __name__ == '__main__':

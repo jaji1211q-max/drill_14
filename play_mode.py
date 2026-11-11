@@ -1,10 +1,13 @@
+from random import randint
+
 from pico2d import *
 import game_world
 import game_framework
 from boy import Boy
-from bird import Bird
+from bird import Bird, DISPLAY_HEIGHT
 from grass import Grass
 
+BIRD_COUNT = 10
 boy = None
 
 
@@ -28,8 +31,12 @@ def init():
     boy = Boy()
     game_world.add_oject(boy)
 
-    bird = Bird(100, 480)
-    game_world.add_oject(bird)
+    min_bird_y = int(DISPLAY_HEIGHT / 2)
+    max_bird_y = get_canvas_height() - min_bird_y
+    for index in range(BIRD_COUNT):
+        x = (index + 0.5) * get_canvas_width() / BIRD_COUNT
+        y = randint(min_bird_y, max_bird_y)
+        game_world.add_oject(Bird(x, y))
 
     grass = Grass()
     game_world.add_oject(grass, 0)
