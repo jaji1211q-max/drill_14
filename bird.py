@@ -9,6 +9,9 @@ SPEED_PPS = SPEED_MPS * PIXELS_PER_METER
 
 FRAME_WIDTH = 183
 FRAME_HEIGHT = 168
+DISPLAY_SCALE = 0.5
+DISPLAY_WIDTH = FRAME_WIDTH * DISPLAY_SCALE
+DISPLAY_HEIGHT = FRAME_HEIGHT * DISPLAY_SCALE
 FRAME_RATE = 12.0
 FRAME_ROWS_Y = (338, 170, 1)
 FRAME_COUNT = 14
@@ -17,7 +20,7 @@ FRAME_COUNT = 14
 class Bird:
     def __init__(self, x, y):
         self.image = load_image('bird_animation.png')
-        left_bound = FRAME_WIDTH / 2
+        left_bound = DISPLAY_WIDTH / 2
         right_bound = get_canvas_width() - left_bound
         self.x = max(left_bound, min(right_bound, x))
         self.y = y
@@ -28,7 +31,7 @@ class Bird:
     def update(self):
         self.frame = (self.frame + FRAME_RATE * game_framework.frame_time) % FRAME_COUNT
 
-        left_bound = FRAME_WIDTH / 2
+        left_bound = DISPLAY_WIDTH / 2
         right_bound = get_canvas_width() - left_bound
         travel_span = right_bound - left_bound
         if travel_span <= 0:
@@ -59,6 +62,6 @@ class Bird:
             flip,
             self.x,
             self.y,
-            FRAME_WIDTH,
-            FRAME_HEIGHT,
+            DISPLAY_WIDTH,
+            DISPLAY_HEIGHT,
         )

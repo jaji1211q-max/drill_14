@@ -21,7 +21,7 @@ class BirdMovementTests(unittest.TestCase):
         game_framework.frame_time = 0.02
 
     def test_keeps_moving_left_after_bouncing_off_right_wall(self):
-        right_bound = canvas.width - bird.FRAME_WIDTH / 2
+        right_bound = canvas.width - bird.DISPLAY_WIDTH / 2
         sprite = bird.Bird(right_bound - 0.1, 480)
 
         sprite.update()
@@ -45,7 +45,7 @@ class BirdMovementTests(unittest.TestCase):
         )
 
     def test_reverses_at_both_walls(self):
-        left_bound = bird.FRAME_WIDTH / 2
+        left_bound = bird.DISPLAY_WIDTH / 2
         right_bound = canvas.width - left_bound
         sprite = bird.Bird(100, 480)
         directions_seen = {sprite.direction}
@@ -57,6 +57,20 @@ class BirdMovementTests(unittest.TestCase):
             self.assertLessEqual(sprite.x, right_bound)
 
         self.assertEqual(directions_seen, {-1, 1})
+
+    def test_draws_bird_at_half_sprite_sheet_size(self):
+        sprite = bird.Bird(800, 480)
+        draw_calls = []
+        sprite.image = types.SimpleNamespace(
+            clip_composite_draw=lambda *args: draw_calls.append(args)
+        )
+
+        sprite.draw()
+
+        self.assertEqual(
+            draw_calls[0][-2:],
+            (bird.DISPLAY_WIDTH, bird.DISPLAY_HEIGHT),
+        )
 
 
 if __name__ == '__main__':
