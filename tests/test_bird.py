@@ -47,6 +47,14 @@ class BirdMovementTests(unittest.TestCase):
             800 + bird.SPEED_PPS * game_framework.frame_time,
         )
 
+    def test_uses_80_kmh_and_12_animation_frames_per_second(self):
+        self.assertEqual(bird.SPEED_KMPH, 80.0)
+        self.assertEqual(bird.FRAME_RATE, 12.0)
+        self.assertAlmostEqual(
+            bird.SPEED_PPS,
+            80.0 * 1000.0 / 3600.0 * bird.PIXELS_PER_METER,
+        )
+
     def test_reverses_at_both_walls(self):
         left_bound = bird.DISPLAY_WIDTH / 2
         right_bound = canvas.width - left_bound
