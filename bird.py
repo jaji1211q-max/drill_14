@@ -17,8 +17,12 @@ FRAME_COUNT = 14
 class Bird:
     def __init__(self, x, y):
         self.image = load_image('bird_animation.png')
-        self.x, self.y = x, y
+        left_bound = FRAME_WIDTH / 2
+        right_bound = get_canvas_width() - left_bound
+        self.x = max(left_bound, min(right_bound, x))
+        self.y = y
         self.direction = 1
+        self._travel_phase = self.x - left_bound
         self.frame = 0.0
 
     def update(self):
@@ -26,20 +30,19 @@ class Bird:
 
         left_bound = FRAME_WIDTH / 2
         right_bound = get_canvas_width() - left_bound
-        travel_distance = self.x - left_bound + (
-            self.direction * SPEED_PPS * game_framework.frame_time
-        )
         travel_span = right_bound - left_bound
         if travel_span <= 0:
             self.x = get_canvas_width() / 2
             return
 
-        travel = travel_distance % (2 * travel_span)
-        if travel < travel_span:
-            self.x = left_bound + travel
+        self._travel_phase = (
+            self._travel_phase + SPEED_PPS * game_framework.frame_time
+        ) % (2 * travel_span)
+        if self._travel_phase < travel_span:
+            self.x = left_bound + self._travel_phase
             self.direction = 1
         else:
-            self.x = right_bound - (travel - travel_span)
+            self.x = right_bound - (self._travel_phase - travel_span)
             self.direction = -1
 
     def draw(self):
