@@ -9,10 +9,10 @@ canvas.width = 1600
 canvas.get_canvas_width = lambda: canvas.width
 canvas.load_image = lambda _path: object()
 
+import game_framework
+
 with patch.dict(sys.modules, {'pico2d': canvas}):
     import bird
-
-import game_framework
 
 
 class BirdMovementTests(unittest.TestCase):
